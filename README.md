@@ -108,8 +108,19 @@ ollama run llama3
 * Clean markdown structure
 
 ---
+11. Screenshots
+    <img width="1775" height="699" alt="image" src="https://github.com/user-attachments/assets/2cd991d8-162f-4ccc-8681-441e63e33465" />
+    <img width="827" height="814" alt="image" src="https://github.com/user-attachments/assets/176b86fd-585a-4038-afd4-6a9fb3631a13" />
+    <img width="1409" height="875" alt="image" src="https://github.com/user-attachments/assets/aa346255-c1ec-46ec-854f-169560a27ace" />
+    <img width="1208" height="819" alt="image" src="https://github.com/user-attachments/assets/5a913d16-2c5a-4ef4-a954-1db8b126a0dd" />
 
-## ⚠️ 11. Problems Faced & Solutions
+
+
+
+    
+
+
+## ⚠️ 12. Problems Faced & Solutions
 
 ### 🔴 Problem 1: Invalid JSON Error
 
