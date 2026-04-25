@@ -1,0 +1,263 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0b673226-8161-4711-a62f-2ed83aa12ec4",
+              "name": "text",
+              "value": "={{$json.body.mood_text}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "5660e948-cfdd-4a36-96e4-da4176a012e7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama3\",\n  \"prompt\": \"Classify the mood of this text into ONE word from this list: Happy, Sad, Angry, Relaxed, Romantic, Neutral, Love, Chill, Energetic. Return ONLY one word.\\nText: {{$json.text}}\",\n  \"stream\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "a4b7258e-0bf8-4e1d-acbd-408862bbcd39",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f42482bf-45ab-4281-9b89-6d60e3bff475",
+              "name": "mood",
+              "value": "={{$json.response}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        0
+      ],
+      "id": "f15e28f8-b321-4d4f-b41d-dd775f5d6314",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "url": "https://spotify23.p.rapidapi.com/search/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{$json[\"mood\"]}} Telugu songs"
+            },
+            {
+              "name": "type",
+              "value": "playlists"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "796f0b0621msh101711e9ad2b294p1627bfjsn778e9a00b6aa"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "spotify23.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "50082624-ae16-4a81-b198-920677f954b4",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b71fbb25-f08b-4c53-a2ee-c8b08327037b",
+              "name": "=mood",
+              "value": "={{$node[\"HTTP Request\"].json[\"response\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "c0b1f810-129b-4f2c-a106-e90b69386b7a",
+              "name": "=playlist_name",
+              "value": "={{$json[\"playlists\"][\"items\"][0][\"data\"][\"name\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "26d602e2-173d-41b9-8fdf-090213a92498",
+              "name": "=playlist_url",
+              "value": "={{\"https://open.spotify.com/playlist/\" + $json[\"playlists\"][\"items\"][0][\"data\"][\"uri\"].split(\":\")[2]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "30c49a35-e10d-4104-a64e-ccc97e9bb22a",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mood",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b92187b4-c3fe-49d4-a72a-0ad4fe508438",
+      "name": "Webhook",
+      "webhookId": "bd4a8b18-d62c-4a5d-a127-78723265ea76"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1456,
+        0
+      ],
+      "id": "cae73534-3884-40f7-9bf6-24e74e54bbfb",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "595cc72f-608a-4739-a76d-ee5f23a758b9",
+  "meta": {
+    "instanceId": "4338d461638d70a47514d4dea238c940c1d998318a18b446bae1b588cfdb3ed0"
+  },
+  "id": "k0iYulADnF5rfu80",
+  "tags": []
+}
